@@ -1,0 +1,3386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telvo - Investment Platform</title>
+  <style>
+    /* Common Styles */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-image: url('https://i.ibb.co/C308FFYM/download-1.jpg');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      min-height: 100vh;
+      padding-bottom: 70px;
+    }
+    
+    .container {
+      max-width: 450px;
+      margin: 0 auto;
+      padding: 15px;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    /* Admin Login Styles */
+    #adminLoginPage {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.7);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 2000;
+    }
+    
+    .login-box {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .login-box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #1e3a8a;
+    }
+    
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .login-box button {
+      width: 100%;
+      padding: 12px;
+      background-color: #1e3a8a;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    
+    .login-box button:hover {
+      background-color: #152c6b;
+    }
+    
+    #adminErrorMessage {
+      color: #f44336;
+      margin-bottom: 15px;
+      text-align: center;
+      display: none;
+    }
+    
+    /* Admin Dashboard Styles */
+    .admin-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    .sidebar {
+      width: 250px;
+      background-color: #1e3a8a;
+      color: white;
+      padding: 20px 0;
+    }
+    
+    .sidebar-header {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .sidebar-menu {
+      margin-top: 20px;
+    }
+    
+    .menu-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .menu-item:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+    
+    .menu-item.active {
+      background-color: rgba(255,255,255,0.2);
+    }
+    
+    .main-content {
+      flex: 1;
+      padding: 20px;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .status-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .status-indicator {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+    }
+    
+    .status-online {
+      background-color: #4CAF50;
+      box-shadow: 0 0 10px #4CAF50;
+    }
+    
+    .status-offline {
+      background-color: #f44336;
+      box-shadow: 0 0 10px #f44336;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .btn-online {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .btn-offline {
+      background-color: #f44336;
+      color: white;
+    }
+    
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    th {
+      background-color: #f8f9fa;
+      font-weight: bold;
+    }
+    
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .admin-status {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .status-pending {
+      background-color: #FFF3E0;
+      color: #E65100;
+    }
+    
+    .status-verified {
+      background-color: #E8F5E9;
+      color: #2E7D32;
+    }
+    
+    .status-rejected {
+      background-color: #FFEBEE;
+      color: #C62828;
+    }
+    
+    .btn-approve {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    
+    .btn-reject {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .btn-delete {
+      background-color: #607D8B;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .btn-edit {
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    
+    .proof-img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    
+    .bank-details {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+    
+    .no-records {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 90%;
+      max-height: 90%;
+    }
+    
+    .modal-content img {
+      max-width: 100%;
+      max-height: 80vh;
+    }
+    
+    /* Animation */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    
+    /* Search bar */
+    .search-container {
+      margin-bottom: 20px;
+    }
+    
+    .search-container input {
+      padding: 10px;
+      width: 300px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    /* Countdown timer */
+    .countdown {
+      font-weight: bold;
+      color: #1e3a8a;
+    }
+    
+    /* Tabs for pending/approved/rejected */
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .tab.active {
+      border-bottom: 3px solid #1e3a8a;
+      font-weight: bold;
+    }
+    
+    .last-login {
+      white-space: nowrap;
+    }
+    
+    /* Edit balance modal */
+    .edit-balance-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .edit-balance-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+    }
+    
+    .edit-balance-content h3 {
+      margin-bottom: 15px;
+    }
+    
+    .edit-balance-content label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    
+    .edit-balance-content input,
+    .edit-balance-content select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .edit-balance-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    
+    .edit-balance-buttons button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .edit-balance-cancel {
+      background-color: #f44336;
+      color: white;
+    }
+    
+    .edit-balance-save {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    /* Login/Create Account Styles */
+    .auth-container {
+      background: rgba(255, 255, 255, 0.8);
+      max-width: 450px;
+      margin: 20px auto;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .auth-container h2 {
+      text-align: center;
+      color: green;
+      margin-top: 0;
+    }
+    
+    .auth-container input, .auth-container button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    
+    .auth-container button {
+      background: #1e3a8a;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .error {
+      color: red;
+      text-align: center;
+      margin: 10px 0;
+    }
+    
+    .success {
+      color: green;
+      text-align: center;
+      margin: 10px 0;
+    }
+    
+    .phone-input-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .country-code {
+      width: 120px;
+      padding: 10px;
+      margin-right: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    
+    .phone-number {
+      width: calc(100% - 140px);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    
+    .password-container {
+      position: relative;
+    }
+    
+    .toggle-password {
+      position: absolute;
+      top: 12px;
+      right: 15px;
+      cursor: pointer;
+      color: #888;
+      font-size: 16px;
+    }
+    
+    .auth-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+    
+    .auth-link a {
+      color: #1e3a8a;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    
+    /* Dashboard Styles */
+    .dashboard {
+      color: white;
+    }
+    
+    .dashboard h1 {
+      text-align: left;
+      font-style: italic;
+      color: blue;
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+    
+    .balance-info {
+      display: flex;
+      justify-content: space-between;
+      background: rgba(0,0,0,0.5);
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .withdraw-btn, .deposit-btn {
+      background: #007acc;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+    }
+    
+    /* Investment Plans */
+    .investment-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    @media (min-width: 600px) {
+      .investment-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .investment-plan {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .plan-image {
+      height: 120px;
+      background-size: cover;
+      background-position: center;
+      background-image: url('https://i.ibb.co/KjGbLg1F/what-are-aluminum-ion-batteries.webp');
+    }
+    
+    .plan-content {
+      padding: 15px;
+    }
+    
+    .plan-header {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    .plan-details {
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .plan-earnings {
+      flex: 1;
+    }
+    
+    .income-amount {
+      color: #4CAF50;
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    
+    .income-label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 8px;
+    }
+    
+    .invest-btn {
+      background: #005f99;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-weight: bold;
+      align-self: flex-end;
+      cursor: pointer;
+    }
+    
+    /* Special Plans */
+    .elite-plan {
+      background: linear-gradient(135deg, rgba(138,43,226,0.7), rgba(75,0,130,0.7));
+    }
+    
+    .platinum-plan {
+      background: linear-gradient(135deg, rgba(212,175,55,0.7), rgba(212,175,55,0.4));
+    }
+    
+    .gold-plan {
+      background: linear-gradient(135deg, rgba(255,215,0,0.7), rgba(218,165,32,0.7));
+    }
+    
+    .diamond-plan {
+      background: linear-gradient(135deg, rgba(185,242,255,0.7), rgba(0,191,255,0.7));
+    }
+    
+    .most-popular-tag {
+      background: #FF4500;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    
+    .monthly-gross {
+      color: #FFD700;
+      font-weight: bold;
+      font-size: 16px;
+      margin: 10px 0 5px 0;
+    }
+    
+    /* Countdown Timer */
+    .countdown-container {
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px 0;
+      text-align: center;
+      border: 1px solid #4CAF50;
+    }
+    
+    .countdown-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #FFD700;
+    }
+    
+    .countdown-timer {
+      font-size: 24px;
+      font-weight: bold;
+      color: #4CAF50;
+      margin: 10px 0;
+    }
+    
+    .countdown-plan {
+      font-size: 16px;
+      margin-top: 5px;
+    }
+    
+    /* Referral Page Styles */
+    .referral-box {
+      background: rgba(0,0,0,0.7);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+      border: 1px solid #007acc;
+      position: relative;
+    }
+    
+    .referral-count {
+      font-size: 48px;
+      color: #4CAF50;
+      font-weight: bold;
+      margin: 10px 0;
+      transition: all 0.5s;
+    }
+    
+    .count-animate {
+      transform: scale(1.2);
+      color: #FFD700;
+    }
+    
+    .referral-label {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    
+    .earnings-note {
+      background: rgba(0,100,0,0.3);
+      border-left: 4px solid #4CAF50;
+      padding: 12px;
+      margin: 20px 0;
+      font-size: 15px;
+      border-radius: 0 8px 8px 0;
+      text-align: left;
+    }
+    
+    .bonus-tag {
+      background: #FFD700;
+      color: black;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    
+    .referral-link-container {
+      background: rgba(0,0,0,0.5);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 25px 0;
+      border: 1px dashed #007acc;
+    }
+    
+    .referral-link {
+      word-break: break-all;
+      font-size: 16px;
+      color: white;
+    }
+    
+    .copy-btn {
+      background: #007acc;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 15px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 200px;
+      transition: all 0.3s;
+    }
+    
+    .copy-btn:hover {
+      background: #005f99;
+      transform: scale(1.05);
+    }
+    
+    .steps {
+      text-align: left;
+      margin: 20px 0;
+    }
+    
+    .step {
+      display: flex;
+      margin-bottom: 15px;
+      align-items: center;
+    }
+    
+    .step-number {
+      background: #007acc;
+      color: white;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+    
+    .earnings-display {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #FFD700;
+    }
+    
+    /* Referral Approval Section */
+    .referral-approval {
+      background: rgba(0,0,0,0.7);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      border: 1px solid #4CAF50;
+    }
+    
+    .referral-approval h3 {
+      text-align: center;
+      margin-top: 0;
+      color: #FFD700;
+    }
+    
+    .referral-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin: 15px 0;
+    }
+    
+    .referral-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .referral-info {
+      flex: 1;
+    }
+    
+    .referral-id {
+      font-weight: bold;
+    }
+    
+    .referral-date {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 8px;
+    }
+    
+    .referral-status {
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .status-pending {
+      background: rgba(255,167,38,0.2);
+      color: #FFA726;
+    }
+    
+    .status-approved {
+      background: rgba(76,175,80,0.2);
+      color: #4CAF50;
+    }
+    
+    .approve-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    
+    /* Contact Us Styles */
+    .contact-container {
+      background: rgba(0, 30, 60, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      margin: 20px auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .header h2 {
+      color: #4CAF50;
+      margin: 0 0 5px 0;
+    }
+    
+    .header p {
+      margin: 0;
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .contact-options {
+      margin-bottom: 20px;
+    }
+    
+    .contact-option {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+      padding: 12px;
+      background: rgba(0,60,120,0.3);
+      border-radius: 8px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    
+    .contact-option:hover {
+      background: rgba(0,90,180,0.4);
+    }
+    
+    .contact-icon {
+      width: 28px;
+      height: 28px;
+      margin-right: 12px;
+      object-fit: contain;
+    }
+    
+    .contact-text {
+      flex: 1;
+      font-size: 14px;
+    }
+    
+    .contact-text a {
+      color: #4CAF50;
+      text-decoration: none;
+    }
+    
+    .chat-box {
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+    
+    .chat-messages {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    
+    .message {
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border-radius: 5px;
+      max-width: 80%;
+      word-wrap: break-word;
+      font-size: 14px;
+    }
+    
+    .ai-message {
+      background: rgba(0,90,180,0.3);
+      border-bottom-left-radius: 0;
+      margin-right: auto;
+    }
+    
+    .user-message {
+      background: rgba(0,120,60,0.3);
+      border-bottom-right-radius: 0;
+      margin-left: auto;
+    }
+    
+    .message-input {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    #chatInput {
+      flex: 1;
+      padding: 10px;
+      border-radius: 20px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      margin-bottom: 8px;
+    }
+    
+    .input-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    
+    #fileInput {
+      display: none;
+    }
+    
+    .file-btn {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      margin-left: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      order: 2;
+    }
+    
+    #sendBtn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      order: 1;
+    }
+    
+    .preview-image {
+      max-width: 100%;
+      max-height: 150px;
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+    
+    .chat-messages::-webkit-scrollbar {
+      width: 5px;
+    }
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    /* Account Page Styles */
+    .account-menu {
+      max-width: 500px;
+      margin: 0 auto 20px;
+      background: rgba(40, 40, 40, 0.85);
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .profile-header {
+      background: rgba(0, 122, 204, 0.7);
+      color: white;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .profile-pic {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: rgba(255,255,255,0.2);
+      background-image: url('https://i.ibb.co/tPbcQS3n/download-2.jpg');
+      background-size: cover;
+      background-position: center;
+      border: 3px solid rgba(255,255,255,0.3);
+      margin-right: 15px;
+    }
+    
+    .profile-info {
+      flex: 1;
+    }
+    
+    .username {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #fff;
+    }
+    
+    .account-status {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .online-status {
+      width: 10px;
+      height: 10px;
+      background-color: #4CAF50;
+      border-radius: 50%;
+      margin-right: 6px;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    .menu-item {
+      padding: 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      color: #fff;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+    
+    .menu-item:hover {
+      background-color: rgba(0, 122, 204, 0.3);
+    }
+    
+    .menu-icon {
+      margin-right: 15px;
+      font-size: 20px;
+      width: 24px;
+      text-align: center;
+      color: rgba(255,255,255,0.8);
+    }
+    
+    .logout {
+      color: #ff6b6b;
+      font-weight: bold;
+    }
+    
+    /* Record Styles */
+    .record-container {
+      padding: 15px;
+    }
+    
+    .record-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .back-button {
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: #4CAF50;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .record-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: rgba(30, 30, 30, 0.7);
+    }
+    
+    .record-table th, .record-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .record-table th {
+      background-color: rgba(0, 122, 204, 0.3);
+      font-weight: bold;
+      color: #fff;
+    }
+    
+    .record-table td {
+      color: rgba(255,255,255,0.9);
+    }
+    
+    .status-pending {
+      color: #FFA726;
+      font-weight: bold;
+    }
+    
+    .status-verified {
+      color: #66BB6A;
+      font-weight: bold;
+    }
+    
+    .current-balance {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: rgba(0, 122, 204, 0.2);
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+      color: #fff;
+    }
+    
+    .no-records {
+      text-align: center;
+      padding: 25px;
+      color: rgba(255,255,255,0.7);
+      font-style: italic;
+      background-color: rgba(30, 30, 30, 0.5);
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    
+    /* Bank Account Form */
+    .bank-form {
+      padding: 15px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: rgba(255,255,255,0.9);
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      box-sizing: border-box;
+      background-color: rgba(30, 30, 30, 0.7);
+      color: #fff;
+      font-size: 15px;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #007acc;
+      box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.3);
+    }
+    
+    .save-btn {
+      background-color: rgba(0, 122, 204, 0.7);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+      font-size: 16px;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+    }
+    
+    .save-btn:hover {
+      background-color: rgba(0, 122, 204, 0.9);
+    }
+    
+    .error-message {
+      color: #ff6b6b;
+      font-size: 13px;
+      margin-top: 6px;
+      display: none;
+    }
+    
+    /* Popup Styles */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .popup-content {
+      background: rgba(0,0,0,0.8);
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      border: 1px solid rgba(255,255,255,0.2);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .popup-content h3 {
+      margin-top: 0;
+      text-align: center;
+    }
+    
+    .popup-content input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+      background: rgba(255,255,255,0.9);
+    }
+    
+    .popup-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .popup-buttons button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      font-weight: bold;
+    }
+    
+    .cancel-btn {
+      background: #ccc;
+      color: black;
+    }
+    
+    .submit-btn {
+      background: #007acc;
+      color: white;
+    }
+    
+    .next-btn {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .dual-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .disclaimer-text {
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    
+    /* Payment Proof Styles */
+    .proof-container {
+      margin: 15px 0;
+    }
+    
+    .proof-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    
+    .proof-preview {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
+    }
+    
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      z-index: 100;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+      flex: 1;
+    }
+    
+    .nav-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+    
+    .active-nav {
+      color: #4CAF50;
+    }
+    
+    /* Email error style */
+    .email-error {
+      color: red;
+      font-size: 12px;
+      margin-top: -10px;
+      margin-bottom: 10px;
+      display: none;
+    }
+    
+    /* Referral code styles */
+    .referral-code-container {
+      background: rgba(0,0,0,0.5);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border: 1px dashed #4CAF50;
+    }
+    
+    .referral-code-label {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    
+    .referral-code {
+      font-size: 18px;
+      font-weight: bold;
+      color: #FFD700;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <!-- Admin Login -->
+  <div id="adminLoginPage" style="display: none;">
+    <div class="login-box" style="background: rgba(0,0,0,0.9); color: white; max-width: 350px; margin: 20px auto; padding: 20px; border-radius: 10px;">
+      <h2>Control Panel Login</h2>
+      <div id="adminErrorMessage" style="color: red; margin-bottom: 15px; display: none;"></div>
+      <input type="text" id="adminUsername" placeholder="Username" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: none;">
+      <input type="password" id="adminPassword" placeholder="Password" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: none;">
+      <button onclick="adminLogin()" style="width: 100%; padding: 10px; background: #1e3a8a; color: white; border: none; border-radius: 5px; cursor: pointer;">Login</button>
+    </div>
+  </div>
+
+  <!-- Login Form -->
+  <div id="loginForm" class="auth-container">
+    <h2>Login Telvo</h2>
+    <div class="phone-input-container">
+      <select id="loginCountryCode" class="country-code">
+        <option value="+234">+234 (Nigeria)</option>
+        <option value="+1">+1 (USA)</option>
+        <option value="+44">+44 (UK)</option>
+        <option value="+91">+91 (India)</option>
+        <option value="+61">+61 (Australia)</option>
+        <option value="+27">+27 (South Africa)</option>
+        <option value="+233">+233 (Ghana)</option>
+        <option value="+49">+49 (Germany)</option>
+        <option value="+971">+971 (UAE)</option>
+        <option value="+254">+254 (Kenya)</option>
+      </select>
+      <input type="text" id="loginPhoneNumber" class="phone-number" placeholder="Enter phone number">
+    </div>
+    <div class="password-container">
+      <input type="password" id="loginPassword" placeholder="Enter password">
+      <span class="toggle-password" onclick="togglePassword('loginPassword', this)">Hide</span>
+    </div>
+    <button onclick="login()">Login</button>
+    <div class="auth-link">
+      Don't have an account? <a href="javascript:void(0);" onclick="toggleForms()">Create one here</a>
+    </div>
+    <div id="loginMessage" class="error"></div>
+  </div>
+
+  <!-- Create Account Form -->
+  <div id="createAccountForm" class="auth-container hidden">
+    <h2>Create Telvo Account</h2>
+    <input type="email" id="createEmail" placeholder="Enter your email" required>
+    <div id="emailError" class="email-error"></div>
+    <div class="password-container">
+      <input type="password" id="createPassword" placeholder="Enter password (min 6 chars)">
+      <span class="toggle-password" onclick="togglePassword('createPassword', this)">Hide</span>
+    </div>
+    <div class="phone-input-container">
+      <select id="countryCode" class="country-code">
+        <option value="+234">+234 (Nigeria)</option>
+        <option value="+1">+1 (USA)</option>
+        <option value="+44">+44 (UK)</option>
+        <option value="+91">+91 (India)</option>
+        <option value="+61">+61 (Australia)</option>
+        <option value="+27">+27 (South Africa)</option>
+        <option value="+233">+233 (Ghana)</option>
+        <option value="+49">+49 (Germany)</option>
+        <option value="+971">+971 (UAE)</option>
+        <option value="+254">+254 (Kenya)</option>
+      </select>
+      <input type="text" id="createPhoneNumber" class="phone-number" placeholder="Enter phone number">
+    </div>
+    <input type="text" id="referralCode" placeholder="Referral Code (Optional)">
+    <button onclick="createAccount()">Create Account</button>
+    <div class="auth-link">
+      Already have an account? <a href="javascript:void(0);" onclick="toggleForms()">Login here</a>
+    </div>
+    <div id="createMessage" class="error"></div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="container hidden">
+    <h1>TELVO</h1>
+
+    <div class="balance-info">
+      <div>Account Balance: <span id="accountBalance">₦0.00</span></div>
+      <div>Deposit Balance: <span id="depositBalance">₦0.00</span></div>
+    </div>
+
+    <!-- Countdown Timer (shown only when user has active investment) -->
+    <div id="countdownContainer" class="countdown-container hidden">
+      <div class="countdown-title">Next Payout In:</div>
+      <div id="countdownTimer" class="countdown-timer">00:00:00</div>
+      <div id="countdownPlan" class="countdown-plan"></div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="withdraw-btn" onclick="openWithdrawPopup()">Withdraw</button>
+      <button class="deposit-btn" onclick="showDepositDisclaimer()">Deposit</button>
+    </div>
+
+    <!-- Investment Plans -->
+    <div class="investment-container" id="investmentPlans">
+      <!-- Plans will be loaded dynamically -->
+    </div>
+  </div>
+
+  <!-- Referral Page -->
+  <div id="referralPage" class="container hidden">
+    <div class="referral-box">
+      <div class="referral-label">PEOPLE JOINED THROUGH YOUR LINK</div>
+      <div class="referral-count" id="refCounter">0</div>
+      <div class="bonus-tag">₦500 per referral</div>
+      <div class="earnings-display" id="earningsDisplay"></div>
+    </div>
+
+    <div class="earnings-note">
+      <strong>Earn ₦500 instantly</strong> for each friend who:<br>
+      1. Signs up using your link<br>
+      2. Makes first deposit (₦2,500 minimum)
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div>Copy your referral link or code below</div>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <div>Share on WhatsApp, Facebook, etc.</div>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <div>Get ₦500 when they deposit</div>
+      </div>
+    </div>
+
+    <div class="referral-code-container">
+      <div class="referral-code-label">YOUR REFERRAL CODE:</div>
+      <div class="referral-code" id="refCode"></div>
+      <button class="copy-btn" onclick="copyCode()" style="margin-top: 10px;">
+        COPY CODE
+      </button>
+    </div>
+    
+    <div class="referral-link-container">
+      <div style="margin-bottom: 10px; font-weight: bold;">YOUR REFERRAL LINK:</div>
+      <div class="referral-link" id="refLink"></div>
+    </div>
+    
+    <button class="copy-btn" onclick="copyLink()">
+      COPY LINK
+    </button>
+    
+    <!-- Referral Approval Section -->
+    <div class="referral-approval">
+      <h3>Pending Referral Approvals</h3>
+      <div class="referral-list" id="referralList">
+        <div class="referral-item">
+          <div class="referral-info">
+            <div class="referral-id">52926C</div>
+            <div class="referral-date">Joined: 15 May 2023</div>
+          </div>
+          <div class="referral-status status-pending">Pending</div>
+          <button class="approve-btn" onclick="approveReferral(this)">Approve</button>
+        </div>
+        <div class="referral-item">
+          <div class="referral-info">
+            <div class="referral-id">3A8B9D</div>
+            <div class="referral-date">Joined: 10 May 2023</div>
+          </div>
+          <div class="referral-status status-approved">Approved</div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-top: 30px; font-size: 14px; color: #FFD700;">
+      <strong>Top Referrers Earn Up To ₦50,000 Weekly!</strong>
+    </div>
+  </div>
+
+  <!-- Contact Us Page -->
+  <div id="contactPage" class="container hidden">
+    <div class="contact-container">
+      <div class="header">
+        <h2>Telvo Support</h2>
+        <p>We're here to help you 24/7</p>
+      </div>
+
+      <div class="contact-options">
+        <div class="contact-option" onclick="window.open('https://t.me/Telvo_support', '_blank')">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" class="contact-icon" alt="Telegram">
+          <div class="contact-text">
+            <strong>Telvo Contact Support</strong><br>
+            <a href="https://t.me/Telvo_support" target="_blank">@Telvo_support</a>
+          </div>
+        </div>
+        
+        <div class="contact-option" onclick="window.open('https://facebook.com/telvosupport', '_blank')">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" class="contact-icon" alt="Facebook">
+          <div class="contact-text">
+            <strong>Facebook Messenger</strong><br>
+            <a href="https://facebook.com/telvosupport" target="_blank">Telvo Official</a>
+          </div>
+        </div>
+        
+        <div class="contact-option" onclick="copyToClipboard('telvoinformation@ccmail.uk')">
+          <div class="contact-icon">✉</div>
+          <div class="contact-text">
+            <strong>Email Support</strong><br>
+            telvoinformation@ccmail.uk (Tap to copy)
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-box">
+        <div class="chat-messages" id="chatMessages">
+          <div class="message ai-message">
+            Welcome to Telvo Support! How can we assist you today?
+          </div>
+        </div>
+        <div class="message-input">
+          <input type="text" id="chatInput" placeholder="Type your message here...">
+          <div class="input-actions">
+            <button id="sendBtn" onclick="sendMessage()">→</button>
+            <button class="file-btn" onclick="document.getElementById('fileInput').click()">📎</button>
+            <input type="file" id="fileInput" accept="image/*" onchange="previewImage()">
+          </div>
+          <div id="imagePreview"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Page -->
+  <div id="accountPage" class="container hidden">
+    <div class="account-menu" id="userView">
+      <div class="profile-header">
+        <div class="profile-pic"></div>
+        <div class="profile-info">
+          <div class="username" id="accountUserId">User ID: 52926C</div>
+          <div class="account-status">
+            <div class="online-status"></div>
+            <div>Online</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="menu-item" onclick="showRechargeRecord()">
+        <div class="menu-icon">𓈆↯</div>
+        <div>Recharge Record</div>
+      </div>
+      
+      <div class="menu-item" onclick="showWithdrawalRecord()">
+        <div class="menu-icon">🗂️</div>
+        <div>Withdrawal Record</div>
+      </div>
+      
+      <div class="menu-item" onclick="showBankAccount()">
+        <div class="menu-icon">𖠿</div>
+        <div>Bank Account</div>
+      </div>
+      
+      <div class="menu-item" onclick="downloadRecords()">
+        <div class="menu-icon">☁️</div>
+        <div>Download Records</div>
+      </div>
+      
+      <div class="menu-item logout" onclick="logout()">
+        <div class="menu-icon">⇦</div>
+        <div>Logout</div>
+      </div>
+    </div>
+
+    <!-- Recharge Record View -->
+    <div class="account-menu" id="rechargeRecordView" style="display: none;">
+      <div class="record-header">
+        <button class="back-button" onclick="backToMenu()">← Back</button>
+        <h3 style="color: #fff;">Recharge Records</h3>
+        <div style="width: 60px;"></div>
+      </div>
+      
+      <div class="record-container">
+        <table class="record-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody id="rechargeRecords">
+            <tr>
+              <td colspan="4">
+                <div class="no-records">No Record Yet!</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div class="current-balance" id="currentBalance">
+          Current Balance: ₦0.00
+        </div>
+      </div>
+    </div>
+
+    <!-- Withdrawal Record View -->
+    <div class="account-menu" id="withdrawalRecordView" style="display: none;">
+      <div class="record-header">
+        <button class="back-button" onclick="backToMenu()">← Back</button>
+        <h3 style="color: #fff;">Withdrawal Records</h3>
+        <div style="width: 60px;"></div>
+      </div>
+      
+      <div class="record-container">
+        <table class="record-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Bank</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="withdrawalRecords">
+            <tr>
+              <td colspan="4">
+                <div class="no-records">No Record Yet!</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bank Account View -->
+    <div class="account-menu" id="bankAccountView" style="display: none;">
+      <div class="record-header">
+        <button class="back-button" onclick="backToMenu()">← Back</button>
+        <h3 style="color: #fff;">Bank Account</h3>
+        <div style="width: 60px;"></div>
+      </div>
+      
+      <div class="bank-form">
+        <div class="form-group">
+          <label for="bankName">Bank Name</label>
+          <input type="text" id="bankName" placeholder="Enter bank name">
+        </div>
+        
+        <div class="form-group">
+          <label for="accountName">Account Name</label>
+          <input type="text" id="accountName" placeholder="Enter account name">
+        </div>
+        
+        <div class="form-group">
+          <label for="accountNumber">Account Number</label>
+          <input type="text" id="accountNumber" placeholder="Enter 10-digit account number" maxlength="10">
+          <div class="error-message" id="accountNumberError">Account number must be 10 digits</div>
+        </div>
+        
+        <button class="save-btn" onclick="saveBankDetails()">Save Bank Details</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="adminDashboard" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #f5f5f5; z-index: 1000; overflow-y: auto;">
+    <div class="admin-container">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <h2>Telvo Control</h2>
+          <p>Administrator Panel</p>
+        </div>
+        <div class="sidebar-menu">
+          <div class="menu-item active" onclick="showAdminSection('dashboard')">Dashboard</div>
+          <div class="menu-item" onclick="showAdminSection('users')">User Management</div>
+          <div class="menu-item" onclick="showAdminSection('deposits')">Deposit Requests</div>
+          <div class="menu-item" onclick="showAdminSection('withdrawals')">Withdrawal Requests</div>
+          <div class="menu-item" onclick="showAdminSection('referrals')">Referral Approvals</div>
+          <div class="menu-item" onclick="adminLogout()">Logout</div>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <!-- Dashboard Section -->
+        <div id="adminDashboardSection">
+          <div class="header">
+            <h2>Dashboard Overview</h2>
+            <div class="status-container">
+              <div>
+                <span id="statusText">Status: OFFLINE</span>
+                <span id="statusIndicator" class="status-indicator status-offline"></span>
+              </div>
+              <button id="toggleBtn" class="btn btn-online" onclick="toggleSiteStatus()">Bring Site ONLINE</button>
+            </div>
+          </div>
+
+          <div class="stats-container">
+            <div class="stat-card">
+              <div>Total Users</div>
+              <div class="stat-value" id="totalUsers">0</div>
+              <div>Registered accounts</div>
+            </div>
+            <div class="stat-card">
+              <div>Active Investments</div>
+              <div class="stat-value" id="activeInvestments">0</div>
+              <div>Currently running</div>
+            </div>
+            <div class="stat-card">
+              <div>Total Deposits</div>
+              <div class="stat-value" id="totalDeposits">₦0</div>
+              <div>All-time verified</div>
+            </div>
+            <div class="stat-card">
+              <div>Total Withdrawals</div>
+              <div class="stat-value" id="totalWithdrawals">₦0</div>
+              <div>All-time paid out</div>
+            </div>
+          </div>
+
+          <h3>Recent Users</h3>
+          <div class="search-container">
+            <input type="text" id="userSearch" placeholder="Search by email..." oninput="searchUsers()">
+          </div>
+          <table id="userTable">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Balance</th>
+                <th>Deposit Balance</th>
+                <th>Active Plan</th>
+                <th>Referrals</th>
+                <th>Last Login</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Users will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Users Section -->
+        <div id="adminUsersSection" style="display: none;">
+          <div class="header">
+            <h2>User Management</h2>
+            <div class="search-container">
+              <input type="text" id="fullUserSearch" placeholder="Search by email..." oninput="searchFullUsers()">
+            </div>
+          </div>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Balance</th>
+                <th>Deposit Balance</th>
+                <th>Active Plan</th>
+                <th>Referrals</th>
+                <th>Last Login</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="fullUserTable">
+              <!-- All users will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Deposits Section -->
+        <div id="adminDepositsSection" style="display: none;">
+          <div class="header">
+            <h2>Deposit Requests</h2>
+            <div class="search-container">
+              <input type="text" id="depositSearch" placeholder="Search by email..." oninput="searchDeposits()">
+            </div>
+          </div>
+          
+          <div class="tabs">
+            <div class="tab active" onclick="changeDepositTab('pending')">Pending</div>
+            <div class="tab" onclick="changeDepositTab('approved')">Approved</div>
+            <div class="tab" onclick="changeDepositTab('rejected')">Rejected</div>
+          </div>
+          
+          <table id="depositTable">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Amount</th>
+                <th>Proof</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Deposit requests will be loaded here -->
+            </tbody>
+          </table>
+          <div id="noDeposits" class="no-records">No pending deposit requests</div>
+        </div>
+
+        <!-- Withdrawals Section -->
+        <div id="adminWithdrawalsSection" style="display: none;">
+          <div class="header">
+            <h2>Withdrawal Requests</h2>
+            <div class="search-container">
+              <input type="text" id="withdrawalSearch" placeholder="Search by email..." oninput="searchWithdrawals()">
+            </div>
+          </div>
+          
+          <div class="tabs">
+            <div class="tab active" onclick="changeWithdrawalTab('pending')">Pending</div>
+            <div class="tab" onclick="changeWithdrawalTab('approved')">Approved</div>
+            <div class="tab" onclick="changeWithdrawalTab('rejected')">Rejected</div>
+          </div>
+          
+          <table id="withdrawalTable">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Amount</th>
+                <th>Bank Details</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Withdrawal requests will be loaded here -->
+            </tbody>
+          </table>
+          <div id="noWithdrawals" class="no-records">No pending withdrawal requests</div>
+        </div>
+
+        <!-- Referrals Section -->
+        <div id="adminReferralsSection" style="display: none;">
+          <div class="header">
+            <h2>Referral Approvals</h2>
+            <div class="search-container">
+              <input type="text" id="referralSearch" placeholder="Search by referrer email..." oninput="searchReferrals()">
+            </div>
+          </div>
+          
+          <table id="referralTable">
+            <thead>
+              <tr>
+                <th>Referrer</th>
+                <th>Referee</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Referral requests will be loaded here -->
+            </tbody>
+          </table>
+          <div id="noReferrals" class="no-records">No pending referral approvals</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Proof Modal -->
+  <div id="proofModal" class="modal">
+    <div class="modal-content">
+      <img id="modalProofImage" src="" alt="Payment Proof">
+    </div>
+  </div>
+
+  <!-- Edit Balance Modal -->
+  <div id="editBalanceModal" class="edit-balance-modal">
+    <div class="edit-balance-content">
+      <h3>Edit User Balance</h3>
+      <input type="hidden" id="editBalanceEmail">
+      <label for="editBalanceType">Balance Type:</label>
+      <select id="editBalanceType">
+        <option value="balance">Account Balance</option>
+        <option value="depositBalance">Deposit Balance</option>
+      </select>
+      <label for="editBalanceAmount">Amount (₦):</label>
+      <input type="number" id="editBalanceAmount" placeholder="Enter amount">
+      <div class="edit-balance-buttons">
+        <button class="edit-balance-cancel" onclick="closeEditBalanceModal()">Cancel</button>
+        <button class="edit-balance-save" onclick="saveUserBalance()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popups -->
+  <div class="popup" id="withdrawPopup">
+    <div class="popup-content">
+      <h3>Withdraw Funds</h3>
+      <input type="text" id="withdrawBankName" placeholder="Bank Name" required>
+      <input type="text" id="withdrawAccountNumber" placeholder="Account Number (10 digits)" maxlength="10" required>
+      <input type="text" id="withdrawAccountName" placeholder="Account Name" required>
+      <input type="number" id="withdrawAmount" placeholder="Amount (₦)" required>
+      <div class="popup-buttons">
+        <button class="cancel-btn" onclick="closePopup('withdrawPopup')">Cancel</button>
+        <button class="submit-btn" onclick="submitWithdrawal()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup" id="depositDisclaimerPopup">
+    <div class="popup-content">
+      <h3>About Telvo</h3>
+      <div class="disclaimer-text">
+        <p>Telvo is a trusted Nigerian company headquartered in Lekki, Lagos. We're officially licensed to operate in Nigeria and work actively within the digital marketplace and tech space. Telvo is not a Ponzi scheme — we don't promise unrealistic returns or depend on recruiting others to sustain earnings. Instead, we generate profit through real business models, digital investments, and our growing influence in the gadget and electronics market across Africa.</p>
+        <p>We pride ourselves on transparency, user satisfaction, and long-term stability. Whether you're investing, earning through referrals, or simply exploring digital opportunities, Telvo provides a secure and rewarding platform for everyday people who want more control over their financial future.</p>
+      </div>
+      <div class="popup-buttons">
+        <button class="cancel-btn" onclick="closePopup('depositDisclaimerPopup')">Cancel</button>
+        <button class="next-btn" onclick="proceedToDeposit()">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup" id="depositPopup">
+    <div class="popup-content">
+      <h3>Deposit Funds</h3>
+      <input type="number" id="depositAmount" placeholder="Enter Amount (₦)" required>
+      
+      <!-- Payment Proof Upload Section -->
+      <div class="proof-container">
+        <label class="proof-label">Upload Payment Proof:</label>
+        <input type="file" id="paymentProof" accept="image/*" onchange="previewPaymentProof()" required>
+        <img id="proofPreview" class="proof-preview" alt="Payment Proof Preview">
+      </div>
+      
+      <div style="text-align: center; margin: 15px 0;">
+        <img src="https://i.ibb.co/pB0Bp8C0/10-11-37-22-Apr-2025.png" alt="Payment QR Code" style="max-width: 200px; border-radius: 8px;">
+      </div>
+      <div class="dual-buttons">
+        <button class="cancel-btn" onclick="closeDeposit()">Cancel</button>
+        <button class="submit-btn" onclick="submitDeposit()">I Have Made Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup" id="investmentDisclaimerPopup">
+    <div class="popup-content">
+      <h3>About Telvo</h3>
+      <div class="disclaimer-text">
+        <p>Telvo is a trusted Nigerian company headquartered in Lekki, Lagos. We're officially licensed to operate in Nigeria and work actively within the digital marketplace and tech space. Telvo is not a Ponzi scheme — we don't promise unrealistic returns or depend on recruiting others to sustain earnings. Instead, we generate profit through real business models, digital investments, and our growing influence in the gadget and electronics market across Africa.</p>
+        <p>We pride ourselves on transparency, user satisfaction, and long-term stability. Whether you're investing, earning through referrals, or simply exploring digital opportunities, Telvo provides a secure and rewarding platform for everyday people who want more control over their financial future.</p>
+      </div>
+      <div class="popup-buttons">
+        <button class="cancel-btn" onclick="closePopup('investmentDisclaimerPopup')">Cancel</button>
+        <button class="next-btn" onclick="proceedToInvestment()">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup" id="investPopup">
+    <div class="popup-content">
+      <h3>Confirm Investment</h3>
+      <p id="investmentDetails" style="text-align: center; margin: 15px 0;"></p>
+      <div class="popup-buttons">
+        <button class="cancel-btn" onclick="closePopup('investPopup')">Cancel</button>
+        <button class="submit-btn" onclick="confirmInvestment()">Proceed to Pay</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav" id="bottomNav">
+    <div class="nav-item" onclick="showAdminLogin()">
+      <div class="nav-icon">⚙</div>
+      <div>Control</div>
+    </div>
+    <div class="nav-item" onclick="showSection('dashboard')">
+      <div class="nav-icon">⌂</div>
+      <div>Home</div>
+    </div>
+    <div class="nav-item" onclick="showSection('referralPage')">
+      <div class="nav-icon">➤</div>
+      <div>Link</div>
+    </div>
+    <div class="nav-item" onclick="showSection('contactPage')">
+      <div class="nav-icon">✆✉</div>
+      <div>Contact</div>
+    </div>
+    <div class="nav-item" onclick="showSection('accountPage')">
+      <div class="nav-icon">👤</div>
+      <div>My</div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let currentUser = null;
+    let currentInvestment = null;
+    let activeInvestment = null;
+    let countdownInterval = null;
+    let referralData = { count: 0, earnings: 0, pendingCount: 0 };
+    
+    // Investment plans data
+    const investmentPlans = [
+      {
+        name: "Basic Plan",
+        investment: 2500,
+        payout: 600,
+        duration: 24, // hours
+        monthly: 18600,
+        popular: false
+      },
+      {
+        name: "Starter Plan",
+        investment: 5000,
+        payout: 1200,
+        duration: 24,
+        monthly: 37200,
+        popular: false
+      },
+      {
+        name: "Smart Plan",
+        investment: 10000,
+        payout: 2400,
+        duration: 24,
+        monthly: 74400,
+        popular: false
+      },
+      {
+        name: "Executive Plan",
+        investment: 20000,
+        payout: 4800,
+        duration: 24,
+        monthly: 148800,
+        popular: false
+      },
+      {
+        name: "Premium Plan",
+        investment: 50000,
+        payout: 12000,
+        duration: 24,
+        monthly: 372000,
+        popular: false
+      },
+      {
+        name: "Elite Plan",
+        investment: 100000,
+        payout: 24000,
+        duration: 24,
+        monthly: 744000,
+        popular: true
+      },
+      {
+        name: "Gold Plan",
+        investment: 150000,
+        payout: 36000,
+        duration: 24,
+        monthly: 1116000,
+        popular: false
+      },
+      {
+        name: "Platinum Plan",
+        investment: 200000,
+        payout: 48000,
+        duration: 24,
+        monthly: 1488000,
+        popular: false
+      },
+      {
+        name: "Diamond Plan",
+        investment: 250000,
+        payout: 60000,
+        duration: 24,
+        monthly: 1860000,
+        popular: false
+      }
+    ];
+
+    // Helper function to generate random 6-digit alphanumeric ID
+    function generateUserId() {
+      const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let result = '';
+      for (let i = 0; i < 6; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+
+    // Initialize the app
+    function initApp() {
+      // Check for referral parameter in URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const refParam = urlParams.get('ref');
+      
+      if (refParam) {
+        // If there's a ref parameter in URL
+        document.getElementById('referralCode').value = refParam;
+        
+        // Update URL without reloading
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+      
+      // Check if user is logged in
+      const storedUser = localStorage.getItem('currentUser');
+      if (storedUser) {
+        currentUser = JSON.parse(storedUser);
+        showDashboard();
+        loadUserData();
+      } else {
+        showLogin();
+      }
+      
+      // Load investment plans
+      loadInvestmentPlans();
+      
+      // Add input event listener for email validation
+      document.getElementById('createEmail').addEventListener('input', function() {
+        document.getElementById('emailError').style.display = 'none';
+      });
+      
+      // Hide admin login on regular app init
+      document.getElementById('adminLoginPage').style.display = 'none';
+    }
+    
+    // Show login form
+    function showLogin() {
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('createAccountForm').classList.add('hidden');
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('referralPage').classList.add('hidden');
+      document.getElementById('contactPage').classList.add('hidden');
+      document.getElementById('accountPage').classList.add('hidden');
+      document.getElementById('bottomNav').classList.add('hidden');
+    }
+    
+    // Show dashboard
+    function showDashboard() {
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('createAccountForm').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      document.getElementById('referralPage').classList.add('hidden');
+      document.getElementById('contactPage').classList.add('hidden');
+      document.getElementById('accountPage').classList.add('hidden');
+      document.getElementById('bottomNav').classList.remove('hidden');
+      
+      // Update active nav
+      updateActiveNav('dashboard');
+      
+      // Update user balance
+      updateBalance();
+      
+      // Check for active investment
+      checkActiveInvestment();
+    }
+    
+    // Show referral page
+    function showReferralPage() {
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('createAccountForm').classList.add('hidden');
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('referralPage').classList.remove('hidden');
+      document.getElementById('contactPage').classList.add('hidden');
+      document.getElementById('accountPage').classList.add('hidden');
+      document.getElementById('bottomNav').classList.remove('hidden');
+      
+      // Update active nav
+      updateActiveNav('referralPage');
+      
+      // Load referral data
+      loadReferralData();
+    }
+    
+    // Show contact page
+    function showContactPage() {
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('createAccountForm').classList.add('hidden');
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('referralPage').classList.add('hidden');
+      document.getElementById('contactPage').classList.remove('hidden');
+      document.getElementById('accountPage').classList.add('hidden');
+      document.getElementById('bottomNav').classList.remove('hidden');
+      
+      // Update active nav
+      updateActiveNav('contactPage');
+    }
+    
+    // Show account page
+    function showAccountPage() {
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('createAccountForm').classList.add('hidden');
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('referralPage').classList.add('hidden');
+      document.getElementById('contactPage').classList.add('hidden');
+      document.getElementById('accountPage').classList.remove('hidden');
+      document.getElementById('bottomNav').classList.remove('hidden');
+      
+      // Update active nav
+      updateActiveNav('accountPage');
+      
+      // Update account info with User ID
+      document.getElementById('accountUserId').textContent = `User ID: ${currentUser.userId}`;
+    }
+    
+    // Update active navigation
+    function updateActiveNav(section) {
+      const navItems = document.querySelectorAll('.nav-item');
+      navItems.forEach(item => item.classList.remove('active-nav'));
+      
+      if (section === 'dashboard') {
+        document.querySelector('.nav-item:nth-child(2)').classList.add('active-nav');
+      } else if (section === 'referralPage') {
+        document.querySelector('.nav-item:nth-child(3)').classList.add('active-nav');
+      } else if (section === 'contactPage') {
+        document.querySelector('.nav-item:nth-child(4)').classList.add('active-nav');
+      } else if (section === 'accountPage') {
+        document.querySelector('.nav-item:nth-child(5)').classList.add('active-nav');
+      }
+    }
+    
+    // Toggle between login and create account forms
+    function toggleForms() {
+      const loginForm = document.getElementById('loginForm');
+      const createForm = document.getElementById('createAccountForm');
+      
+      if (loginForm.classList.contains('hidden')) {
+        loginForm.classList.remove('hidden');
+        createForm.classList.add('hidden');
+      } else {
+        loginForm.classList.add('hidden');
+        createForm.classList.remove('hidden');
+      }
+      
+      document.getElementById('loginMessage').textContent = '';
+      document.getElementById('createMessage').textContent = '';
+    }
+    
+    // Login function
+    function login() {
+      const countryCode = document.getElementById('loginCountryCode').value;
+      let phoneNumber = document.getElementById('loginPhoneNumber').value.trim();
+      if (countryCode === "+234" && phoneNumber.startsWith("0")) {
+        phoneNumber = phoneNumber.substring(1);
+      }
+      phoneNumber = countryCode + phoneNumber;
+      const password = document.getElementById('loginPassword').value.trim();
+
+      const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+      const user = storedUsers.find(u => u.phoneNumber === phoneNumber && u.password === password);
+
+      if (user) {
+        currentUser = user;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        showDashboard();
+      } else {
+        document.getElementById('loginMessage').textContent = 'Invalid phone number or password.';
+      }
+    }
+    
+    // Create account function with email validation
+    function createAccount() {
+      const email = document.getElementById('createEmail').value.trim();
+      const password = document.getElementById('createPassword').value.trim();
+      let phoneNumber = document.getElementById('createPhoneNumber').value.trim();
+      const countryCode = document.getElementById('countryCode').value;
+      const referralCode = document.getElementById('referralCode').value.trim();
+      const emailError = document.getElementById('emailError');
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        emailError.textContent = 'Please enter a valid email address';
+        emailError.style.display = 'block';
+        return;
+      }
+
+      if (!email || !password || !phoneNumber) {
+        document.getElementById('createMessage').textContent = 'Please fill in all required fields.';
+        return;
+      }
+
+      if (countryCode === "+234" && phoneNumber.startsWith("0")) {
+        phoneNumber = phoneNumber.substring(1);
+      }
+      phoneNumber = countryCode + phoneNumber;
+
+      if (password.length < 6) {
+        document.getElementById('createMessage').textContent = 'Password must be at least 6 characters.';
+        return;
+      }
+
+      const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+      
+      // Check if email already exists
+      const existingUser = storedUsers.find(user => user.email === email);
+      if (existingUser) {
+        emailError.textContent = 'Email already registered';
+        emailError.style.display = 'block';
+        return;
+      }
+
+      // Check if phone number already exists
+      const phoneExists = storedUsers.find(user => user.phoneNumber === phoneNumber);
+      if (phoneExists) {
+        document.getElementById('createMessage').textContent = 'Phone number already registered.';
+        return;
+      }
+
+      // Generate unique user ID
+      const userId = generateUserId();
+      
+      const newUser = { 
+        userId,
+        email,
+        phoneNumber, 
+        password, 
+        referralCode,
+        balance: 0,
+        depositBalance: 0,
+        investments: [],
+        deposits: [],
+        withdrawals: [],
+        bankDetails: null,
+        referrals: [],
+        referralEarnings: 0,
+        createdAt: new Date().toISOString()
+      };
+      
+      // If there was a referral code, add to referrer's referrals
+      if (referralCode) {
+        const referrer = storedUsers.find(user => user.userId === referralCode);
+        if (referrer) {
+          referrer.referrals.push({
+            userId: newUser.userId,
+            date: new Date().toISOString(),
+            approved: false
+          });
+          localStorage.setItem('users', JSON.stringify(storedUsers));
+        }
+      }
+      
+      storedUsers.push(newUser);
+      localStorage.setItem('users', JSON.stringify(storedUsers));
+      
+      currentUser = newUser;
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      
+      document.getElementById('createMessage').className = 'success';
+      document.getElementById('createMessage').textContent = 'Account created successfully!';
+      
+      // Clear form fields
+      document.getElementById('createEmail').value = '';
+      document.getElementById('createPassword').value = '';
+      document.getElementById('createPhoneNumber').value = '';
+      document.getElementById('referralCode').value = '';
+      
+      // Switch to dashboard after 2 seconds
+      setTimeout(() => {
+        showDashboard();
+      }, 2000);
+    }
+    
+    // Load user data
+    function loadUserData() {
+      if (!currentUser) return;
+      
+      const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+      const userIndex = storedUsers.findIndex(u => u.phoneNumber === currentUser.phoneNumber);
+      
+      if (userIndex !== -1) {
+        currentUser = storedUsers[userIndex];
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      }
+    }
+    
+    // Save user data
+    function saveUserData() {
+      if (!currentUser) return;
+      
+      const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+      const userIndex = storedUsers.findIndex(u => u.phoneNumber === currentUser.phoneNumber);
+      
+      if (userIndex !== -1) {
+        storedUsers[userIndex] = currentUser;
+        localStorage.setItem('users', JSON.stringify(storedUsers));
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      }
+    }
+    
+    // Update balance display
+    function updateBalance() {
+      if (!currentUser) return;
+      
+      document.getElementById('accountBalance').textContent = `₦${currentUser.balance.toLocaleString()}`;
+      document.getElementById('depositBalance').textContent = `₦${currentUser.depositBalance.toLocaleString()}`;
+    }
+    
+    // Load investment plans
+    function loadInvestmentPlans() {
+      const container = document.getElementById('investmentPlans');
+      container.innerHTML = '';
+      
+      investmentPlans.forEach(plan => {
+        const planElement = document.createElement('div');
+        planElement.className = `investment-plan ${plan.popular ? 'elite-plan' : ''}`;
+        planElement.innerHTML = `
+          <div class="plan-image"></div>
+          <div class="plan-content">
+            ${plan.popular ? '<div class="most-popular-tag">MOST POPULAR</div>' : ''}
+            <div class="plan-header">${plan.name}</div>
+            <div class="plan-details">
+              <div class="plan-earnings">
+                <div class="income-amount">₦${plan.payout.toLocaleString()}</div>
+                <div class="income-label">Every ${plan.duration} hours</div>
+                <div class="income-amount">₦${plan.investment.toLocaleString()}</div>
+                <div class="income-label">Investment</div>
+                <div class="monthly-gross">₦${plan.monthly.toLocaleString()} Monthly Gross</div>
+              </div>
+              <button class="invest-btn" onclick="showInvestmentDisclaimer(${plan.investment}, '${plan.name}', ${plan.payout}, ${plan.duration})">Invest Now</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(planElement);
+      });
+    }
+    
+    // Show investment disclaimer
+    function showInvestmentDisclaimer(amount, planName, payout, duration) {
+      currentInvestment = { amount, planName, payout, duration };
+      document.getElementById('investmentDisclaimerPopup').style.display = 'flex';
+    }
+    
+    // Proceed to investment after disclaimer
+    function proceedToInvestment() {
+      closePopup('investmentDisclaimerPopup');
+      const { amount, planName, payout, duration } = currentInvestment;
+      document.getElementById('investmentDetails').textContent = 
+        `You are investing in ${planName} (₦${amount.toLocaleString()}) to earn ₦${payout.toLocaleString()} every ${duration} hours`;
+      document.getElementById('investPopup').style.display = 'flex';
+    }
+    
+    // Confirm investment
+    function confirmInvestment() {
+      closePopup('investPopup');
+      
+      // Show deposit popup with payment proof requirement
+      document.getElementById('depositAmount').value = currentInvestment.amount;
+      document.getElementById('depositPopup').style.display = 'flex';
+    }
+    
+    // Submit deposit
+    function submitDeposit() {
+      const amount = parseFloat(document.getElementById('depositAmount').value);
+      const proof = document.getElementById('paymentProof').files[0];
+      
+      if (!amount || amount <= 0) {
+        alert("Please enter a valid amount");
+        return;
+      }
+      
+      if (!proof) {
+        alert("Please upload your payment proof");
+        return;
+      }
+      
+      // Add deposit record (pending)
+      const deposit = {
+        date: new Date().toLocaleString(),
+        amount,
+        status: 'pending',
+        proof: URL.createObjectURL(proof)
+      };
+      
+      currentUser.deposits.push(deposit);
+      
+      // Add investment record (pending)
+      if (currentInvestment) {
+        const investment = {
+          id: Date.now(),
+          planName: currentInvestment.planName,
+          amount: currentInvestment.amount,
+          payout: currentInvestment.payout,
+          duration: currentInvestment.duration,
+          startTime: Date.now(),
+          endTime: Date.now() + (currentInvestment.duration * 60 * 60 * 1000),
+          status: 'pending'
+        };
+        
+        currentUser.investments.push(investment);
+      }
+      
+      saveUserData();
+      
+      alert(`Your deposit of ₦${amount} and investment have been submitted for approval with payment proof!`);
+      closePopup('depositPopup');
+      
+      // Update UI
+      updateBalance();
+    }
+    
+    // Check for active investment and start countdown
+    function checkActiveInvestment() {
+      if (!currentUser || !currentUser.investments) return;
+      
+      // Find active investment
+      activeInvestment = currentUser.investments.find(inv => inv.status === 'active');
+      
+      if (activeInvestment) {
+        // Show countdown
+        document.getElementById('countdownContainer').classList.remove('hidden');
+        document.getElementById('countdownPlan').textContent = activeInvestment.planName;
+        
+        // Start countdown
+        startCountdown(activeInvestment.endTime);
+      } else {
+        document.getElementById('countdownContainer').classList.add('hidden');
+      }
+    }
+    
+    // Start countdown timer
+    function startCountdown(endTime) {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+      
+      function updateCountdown() {
+        const now = Date.now();
+        const distance = endTime - now;
+        
+        if (distance < 0) {
+          // Countdown finished - payout time!
+          clearInterval(countdownInterval);
+          payoutInvestment();
+          return;
+        }
+        
+        // Calculate hours, minutes, seconds
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        // Display countdown
+        document.getElementById('countdownTimer').textContent = 
+          `${Math.floor(hours).toString().padStart(2, '0')}:${Math.floor(minutes).toString().padStart(2, '0')}:${Math.floor(seconds).toString().padStart(2, '0')}`;
+      }
+      
+      // Update immediately
+      updateCountdown();
+      
+      // Update every second
+      countdownInterval = setInterval(updateCountdown, 1000);
+    }
+    
+    // Payout investment
+    function payoutInvestment() {
+      if (!activeInvestment) return;
+      
+      // Add payout to balance
+      currentUser.balance += activeInvestment.payout;
+      
+      // Reset investment timer
+      activeInvestment.startTime = Date.now();
+      activeInvestment.endTime = Date.now() + (activeInvestment.duration * 60 * 60 * 1000);
+      
+      // Save user data
+      saveUserData();
+      
+      // Update UI
+      updateBalance();
+      startCountdown(activeInvestment.endTime);
+      
+      // Show success message
+      alert(`You've earned ₦${activeInvestment.payout} from your ${activeInvestment.planName} investment!`);
+    }
+    
+    // Show deposit disclaimer
+    function showDepositDisclaimer() {
+      document.getElementById('depositDisclaimerPopup').style.display = 'flex';
+    }
+    
+    // Proceed to deposit after disclaimer
+    function proceedToDeposit() {
+      closePopup('depositDisclaimerPopup');
+      document.getElementById('depositAmount').value = '';
+      document.getElementById('depositPopup').style.display = 'flex';
+    }
+    
+    // Preview payment proof image
+    function previewPaymentProof() {
+      const file = document.getElementById('paymentProof').files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('proofPreview');
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    // Open withdraw popup
+    function openWithdrawPopup() {
+      document.getElementById('withdrawPopup').style.display = 'flex';
+    }
+    
+    // Submit withdrawal
+    function submitWithdrawal() {
+      const bankName = document.getElementById('withdrawBankName').value;
+      const accountNumber = document.getElementById('withdrawAccountNumber').value;
+      const accountName = document.getElementById('withdrawAccountName').value;
+      const amount = parseFloat(document.getElementById('withdrawAmount').value);
+      
+      if (!bankName || !accountNumber || !accountName || !amount) {
+        alert("Please fill all fields");
+        return;
+      }
+      
+      if (!/^\d{10}$/.test(accountNumber)) {
+        alert("Account number must be 10 digits");
+        return;
+      }
+      
+      if (amount > currentUser.balance) {
+        alert("Insufficient balance");
+        return;
+      }
+      
+      // Add withdrawal record
+      const withdrawal = {
+        date: new Date().toLocaleString(),
+        amount,
+        bank: bankName,
+        status: 'pending'
+      };
+      
+      currentUser.withdrawals.push(withdrawal);
+      currentUser.balance -= amount;
+      saveUserData();
+      
+      alert("Withdrawal request submitted successfully!");
+      closePopup('withdrawPopup');
+      updateBalance();
+    }
+    
+    // Close popup
+    function closePopup(popupId) {
+      document.getElementById(popupId).style.display = 'none';
+    }
+    
+    // Close deposit popup
+    function closeDeposit() {
+      closePopup('depositPopup');
+    }
+    
+    // Toggle password visibility
+    function togglePassword(id, icon) {
+      const input = document.getElementById(id);
+      if (input.type === "password") {
+        input.type = "text";
+        icon.textContent = "Show";
+      } else {
+        input.type = "password";
+        icon.textContent = "Hide";
+      }
+    }
+    
+    // Show section
+    function showSection(section) {
+      if (!currentUser) {
+        showLogin();
+        return;
+      }
+      
+      if (section === 'dashboard') {
+        showDashboard();
+      } else if (section === 'referralPage') {
+        showReferralPage();
+      } else if (section === 'contactPage') {
+        showContactPage();
+      } else if (section === 'accountPage') {
+        showAccountPage();
+      }
+    }
+    
+    // Load referral data
+    function loadReferralData() {
+      if (!currentUser) return;
+      
+      // Generate referral link using user ID
+      const referralLink = `https://telvowin.infy.uk/?ref=${currentUser.userId}`;
+      document.getElementById('refLink').textContent = referralLink;
+      
+      // Display referral code (user ID)
+      document.getElementById('refCode').textContent = currentUser.userId;
+      
+      // Count all referrals (both approved and pending)
+      const totalReferrals = currentUser.referrals?.length || 0;
+      const pendingReferrals = currentUser.referrals?.filter(r => !r.approved).length || 0;
+      const approvedReferrals = totalReferrals - pendingReferrals;
+      
+      // Update referral data
+      referralData = {
+        count: totalReferrals,
+        pendingCount: pendingReferrals,
+        earnings: currentUser.referralEarnings || 0
+      };
+      
+      updateCounter();
+      
+      // Load pending referrals
+      updateReferralList();
+    }
+    
+    // Copy referral code
+    function copyCode() {
+      navigator.clipboard.writeText(currentUser.userId)
+        .then(() => {
+          const btn = document.querySelector('.copy-btn');
+          btn.textContent = "✓ COPIED!";
+          setTimeout(() => {
+            btn.textContent = "COPY CODE";
+          }, 2000);
+        })
+        .catch(() => alert('Failed to copy code'));
+    }
+    
+    // Update referral counter
+    function updateCounter() {
+      const counterElement = document.getElementById('refCounter');
+      const earningsElement = document.getElementById('earningsDisplay');
+      
+      // Animate the counter change
+      counterElement.classList.add('count-animate');
+      earningsElement.classList.add('count-animate');
+      
+      // Update values
+      counterElement.textContent = referralData.count;
+      earningsElement.textContent = `Total Earnings: ₦${referralData.earnings.toLocaleString()}`;
+      
+      // Remove animation after 500ms
+      setTimeout(() => {
+        counterElement.classList.remove('count-animate');
+        earningsElement.classList.remove('count-animate');
+      }, 500);
+    }
+    
+    // Update referral list
+    function updateReferralList() {
+      const referralList = document.getElementById('referralList');
+      referralList.innerHTML = '';
+      
+      if (!currentUser.referrals || currentUser.referrals.length === 0) {
+        referralList.innerHTML = '<div style="text-align: center; padding: 20px; color: rgba(255,255,255,0.7);">No pending referrals</div>';
+        return;
+      }
+      
+      currentUser.referrals.forEach(referral => {
+        const referralItem = document.createElement('div');
+        referralItem.className = 'referral-item';
+        
+        referralItem.innerHTML = `
+          <div class="referral-info">
+            <div class="referral-id">${referral.userId}</div>
+            <div class="referral-date">Joined: ${new Date(referral.date).toLocaleDateString()}</div>
+          </div>
+          <div class="referral-status ${referral.approved ? 'status-approved' : 'status-pending'}">
+            ${referral.approved ? 'Approved' : 'Pending'}
+          </div>
+          ${!referral.approved ? '<button class="approve-btn" onclick="approveReferral(this)">Approve</button>' : ''}
+        `;
+        
+        referralList.appendChild(referralItem);
+      });
+    }
+    
+    // Approve referral
+    function approveReferral(button) {
+      const referralItem = button.closest('.referral-item');
+      const referralId = referralItem.querySelector('.referral-id').textContent;
+      
+      // Find referral in user data
+      const referral = currentUser.referrals.find(r => r.userId === referralId);
+      if (referral) {
+        referral.approved = true;
+        currentUser.referralEarnings += 500; // Add referral bonus (changed from 300 to 500)
+        currentUser.balance += 500; // Add to balance (changed from 300 to 500)
+        saveUserData();
+        
+        // Update UI
+        updateReferralList();
+        
+        // Update referral counts
+        referralData.count = currentUser.referrals.length;
+        referralData.pendingCount = currentUser.referrals.filter(r => !r.approved).length;
+        referralData.earnings = currentUser.referralEarnings;
+        
+        updateCounter();
+        updateBalance();
+        
+        alert(`Referral ${referralId} approved! ₦500 has been added to your account.`);
+      }
+    }
+    
+    // Copy referral link
+    function copyLink() {
+      const link = document.getElementById('refLink');
+      navigator.clipboard.writeText(link.textContent.trim())
+        .then(() => {
+          const btn = document.querySelectorAll('.copy-btn')[1];
+          btn.textContent = "✓ COPIED!";
+          setTimeout(() => {
+            btn.textContent = "COPY LINK";
+          }, 2000);
+        })
+        .catch(() => alert('Failed to copy link'));
+    }
+    
+    // Copy to clipboard
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => addMessage("System: Email copied to clipboard", "ai"))
+        .catch(() => addMessage("System: Failed to copy email", "ai"));
+    }
+    
+    // Chat functions
+    function addMessage(text, sender) {
+      const chat = document.getElementById('chatMessages');
+      const msg = document.createElement('div');
+      msg.className = `message ${sender}-message`;
+      msg.innerHTML = text.replace(/\n/g, '<br>');
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+    }
+    
+    let imageFile = null;
+    
+    function previewImage() {
+      const file = document.getElementById('fileInput').files[0];
+      if (file) {
+        imageFile = file;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('imagePreview').innerHTML = 
+            `<img src="${e.target.result}" class="preview-image" alt="Preview">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    const aiResponses = {
+      greeting: "Hello! I'm Telvo Support AI. How can I assist you with your account today?",
+      personal: "I'm an AI assistant. I don't eat or sleep. How can I help with your Telvo account?",
+      deposit: "To deposit money:\n1. Go to Home\n2. Tap on Deposit\n3. Send money with transfer receipt\n4. Wait for admin approval\n\nProcessing usually takes 5-15 minutes.",
+      withdraw: "To withdraw:\n1. Enter your account details\n2. Submit withdrawal request\n3. Wait for admin approval\n\nThank you for your request. Our team will process it shortly.",
+      issue: "Thank you for your message. Our team will reply to you shortly.\n\nFor faster response, you can contact us via:\n- Telegram: t.me/Telvo_support\n- Facebook: Jerker Widerström\n- Email: telvoinformation@ccmail.uk",
+      default: "Thank you for your message. Our team will reply to you shortly."
+    };
+    
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      
+      if (message || imageFile) {
+        if (message) {
+          addMessage(message, 'user');
+          input.value = '';
+        }
+        
+        if (imageFile) {
+          addMessage("[Image attached]", 'user');
+          document.getElementById('imagePreview').innerHTML = '';
+          imageFile = null;
+          document.getElementById('fileInput').value = '';
+        }
+        
+        setTimeout(() => {
+          let response;
+          const lowerMsg = message.toLowerCase();
+          
+          if (lowerMsg.includes('hello') || lowerMsg.includes('hi')) {
+            response = aiResponses.greeting;
+          } 
+          else if (lowerMsg.includes('eat') || lowerMsg.includes('sleep') || lowerMsg.includes('human') || lowerMsg.includes('you')) {
+            response = aiResponses.personal;
+          }
+          else if (lowerMsg.includes('deposit') || lowerMsg.includes('add money') || lowerMsg.includes('fund')) {
+            response = aiResponses.deposit;
+          }
+          else if (lowerMsg.includes('withdraw') || lowerMsg.includes('withdrawal') || lowerMsg.includes('send money')) {
+            response = aiResponses.withdraw;
+          }
+          else if (lowerMsg.includes('issue') || lowerMsg.includes('problem') || lowerMsg.includes('error')) {
+            response = aiResponses.issue;
+          }
+          else {
+            response = aiResponses.default;
+          }
+          
+          addMessage(response, 'ai');
+        }, 800);
+      }
+    }
+    
+    // Account page functions
+    function showRechargeRecord() {
+      document.getElementById('userView').style.display = 'none';
+      document.getElementById('rechargeRecordView').style.display = 'block';
+      
+      if (currentUser.deposits.length === 0) {
+        document.getElementById('rechargeRecords').innerHTML = `
+          <tr>
+            <td colspan="4">
+              <div class="no-records">No Record Yet!</div>
+            </td>
+          </tr>
+        `;
+      } else {
+        let balance = 0;
+        const recordsHtml = currentUser.deposits
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .map(deposit => {
+            if (deposit.status === 'verified') {
+              balance += deposit.amount;
+            }
+            return `
+              <tr>
+                <td>${deposit.date}</td>
+                <td>₦${deposit.amount.toLocaleString()}</td>
+                <td class="status-${deposit.status}">${deposit.status === 'verified' ? 'Verified' : 'Pending'}</td>
+                <td>${deposit.status === 'verified' ? '₦'+balance.toLocaleString() : '-'}</td>
+              </tr>
+            `;
+          }).join('');
+        
+        document.getElementById('rechargeRecords').innerHTML = recordsHtml;
+      }
+      
+      document.getElementById('currentBalance').textContent = `Current Balance: ₦${currentUser.balance.toLocaleString()}`;
+    }
+    
+    function showWithdrawalRecord() {
+      document.getElementById('userView').style.display = 'none';
+      document.getElementById('withdrawalRecordView').style.display = 'block';
+      
+      if (currentUser.withdrawals.length === 0) {
+        document.getElementById('withdrawalRecords').innerHTML = `
+          <tr>
+            <td colspan="4">
+              <div class="no-records">No Record Yet!</div>
+            </td>
+          </tr>
+        `;
+      } else {
+        const recordsHtml = currentUser.withdrawals
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .map(withdrawal => {
+            return `
+              <tr>
+                <td>${withdrawal.date}</td>
+                <td>₦${withdrawal.amount.toLocaleString()}</td>
+                <td>${withdrawal.bank}</td>
+                <td class="status-${withdrawal.status}">${withdrawal.status === 'verified' ? 'Verified' : 'Pending'}</td>
+              </tr>
+            `;
+          }).join('');
+        
+        document.getElementById('withdrawalRecords').innerHTML = recordsHtml;
+      }
+    }
+    
+    function showBankAccount() {
+      document.getElementById('userView').style.display = 'none';
+      document.getElementById('bankAccountView').style.display = 'block';
+      
+      if (currentUser.bankDetails) {
+        document.getElementById('bankName').value = currentUser.bankDetails.bankName || '';
+        document.getElementById('accountName').value = currentUser.bankDetails.accountName || '';
+        document.getElementById('accountNumber').value = currentUser.bankDetails.accountNumber || '';
+      }
+    }
+    
+    function saveBankDetails() {
+      const bankName = document.getElementById('bankName').value;
+      const accountName = document.getElementById('accountName').value;
+      const accountNumber = document.getElementById('accountNumber').value;
+      
+      // Validate account number
+      if (accountNumber.length !== 10 || !/^\d+$/.test(accountNumber)) {
+        document.getElementById('accountNumberError').style.display = 'block';
+        return;
+      } else {
+        document.getElementById('accountNumberError').style.display = 'none';
+      }
+      
+      // Save bank details
+      currentUser.bankDetails = {
+        bankName,
+        accountName,
+        accountNumber
+      };
+      
+      saveUserData();
+      
+      alert("Bank details saved successfully!");
+      backToMenu();
+    }
+    
+    function downloadRecords() {
+      // Create formatted text content
+      let textContent = "Recharge Records\n";
+      textContent += "Date\t\tAmount\tStatus\tBalance\n";
+      textContent += "----------------------------------------\n";
+      
+      if (currentUser.deposits.length === 0) {
+        textContent += "No Record Yet!\n";
+      } else {
+        // Add recharge records with proper spacing
+        let balance = 0;
+        currentUser.deposits
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .forEach(deposit => {
+            if (deposit.status === 'verified') {
+              balance += deposit.amount;
+            }
+            textContent += `${deposit.date}\t₦${deposit.amount}\t${deposit.status === 'verified' ? 'Verified' : 'Pending'}\t${deposit.status === 'verified' ? '₦'+balance : '-'}\n`;
+          });
+      }
+      
+      textContent += "\n\nWithdrawal Records\n";
+      textContent += "Date\t\tAmount\tBank\t\tStatus\n";
+      textContent += "----------------------------------------\n";
+      
+      if (currentUser.withdrawals.length === 0) {
+        textContent += "No Record Yet!\n";
+      } else {
+        // Add withdrawal records with proper spacing
+        currentUser.withdrawals
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .forEach(withdrawal => {
+            textContent += `${withdrawal.date}\t₦${withdrawal.amount}\t${withdrawal.bank}\t${withdrawal.status === 'verified' ? 'Verified' : 'Pending'}\n`;
+          });
+      }
+      
+      // Create download link
+      const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `Telvo_Records_${new Date().toISOString().split('T')[0]}.txt`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      alert("Your records have been downloaded");
+    }
+    
+    function backToMenu() {
+      document.getElementById('rechargeRecordView').style.display = 'none';
+      document.getElementById('withdrawalRecordView').style.display = 'none';
+      document.getElementById('bankAccountView').style.display = 'none';
+      document.getElementById('userView').style.display = 'block';
+    }
+    
+    // Logout
+    function logout() {
+      if(confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem('currentUser');
+        currentUser = null;
+        if (countdownInterval) {
+          clearInterval(countdownInterval);
+        }
+        showLogin();
+      }
+    }
+    
+    // Admin functions
+    function showAdminLogin() {
+      document.getElementById('adminLoginPage').style.display = 'flex';
+    }
+
+    function adminLogin() {
+      const username = document.getElementById('adminUsername').value;
+      const password = document.getElementById('adminPassword').value;
+      const errorMessage = document.getElementById('adminErrorMessage');
+      
+      // Hardcoded credentials
+      const ADMIN_CREDENTIALS = {
+        username: "Judges",
+        password: "@Starboy16"
+      };
+      
+      if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+        document.getElementById('adminLoginPage').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'block';
+        loadAdminData();
+      } else {
+        errorMessage.textContent = "Invalid username or password";
+        errorMessage.style.display = "block";
+      }
+    }
+
+    function adminLogout() {
+      document.getElementById('adminDashboard').style.display = 'none';
+      document.getElementById('adminLoginPage').style.display = 'none';
+    }
+
+    function showAdminSection(section) {
+      // Hide all sections
+      document.getElementById('adminDashboardSection').style.display = 'none';
+      document.getElementById('adminUsersSection').style.display = 'none';
+      document.getElementById('adminDepositsSection').style.display = 'none';
+      document.getElementById('adminWithdrawalsSection').style.display = 'none';
+      document.getElementById('adminReferralsSection').style.display = 'none';
+      
+      // Show selected section
+      document.getElementById(`admin${section.charAt(0).toUpperCase() + section.slice(1)}Section`).style.display = 'block';
+      
+      // Update active menu item
+      const menuItems = document.querySelectorAll('.menu-item');
+      menuItems.forEach(item => item.classList.remove('active'));
+      document.querySelector(`.menu-item[onclick="showAdminSection('${section}')"]`).classList.add('active');
+    }
+
+    function loadAdminData() {
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      
+      // Update stats
+      document.getElementById('totalUsers').textContent = users.length;
+      
+      let activeInvestments = 0;
+      let totalDeposits = 0;
+      let totalWithdrawals = 0;
+      
+      users.forEach(user => {
+        if (user.investments) {
+          activeInvestments += user.investments.filter(i => i.status === 'active').length;
+        }
+        if (user.deposits) {
+          totalDeposits += user.deposits.filter(d => d.status === 'verified').reduce((sum, d) => sum + d.amount, 0);
+        }
+        if (user.withdrawals) {
+          totalWithdrawals += user.withdrawals.filter(w => w.status === 'verified').reduce((sum, w) => sum + w.amount, 0);
+        }
+      });
+      
+      document.getElementById('activeInvestments').textContent = activeInvestments;
+      document.getElementById('totalDeposits').textContent = `₦${totalDeposits.toLocaleString()}`;
+      document.getElementById('totalWithdrawals').textContent = `₦${totalWithdrawals.toLocaleString()}`;
+      
+      // Load recent users
+      const recentUsers = users.slice(-5).reverse();
+      const userTableBody = document.getElementById('userTable').querySelector('tbody');
+      userTableBody.innerHTML = recentUsers.map(user => {
+        const activePlan = user.investments?.find(i => i.status === 'active');
+        return `
+          <tr data-email="${user.email}">
+            <td>${user.email || 'N/A'}</td>
+            <td>${user.phoneNumber || 'N/A'}</td>
+            <td>₦${user.balance?.toLocaleString() || '0'}</td>
+            <td>₦${user.depositBalance?.toLocaleString() || '0'}</td>
+            <td>${activePlan?.planName || 'None'}</td>
+            <td>${user.referrals?.length || 0}</td>
+            <td class="last-login">${new Date(user.lastLogin || user.createdAt).toLocaleString()}</td>
+            <td>
+              <button class="btn-edit" onclick="editUserBalance('${user.email}')">Edit</button>
+              <button class="btn-delete" onclick="deleteUser('${user.email}')">Delete</button>
+            </td>
+          </tr>
+        `;
+      }).join('') || '<tr><td colspan="8">No users found</td></tr>';
+    }
+
+    function editUserBalance(email) {
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const user = users.find(u => u.email === email);
+      
+      if (!user) {
+        alert("User not found!");
+        return;
+      }
+      
+      document.getElementById('editBalanceEmail').value = email;
+      document.getElementById('editBalanceAmount').value = user.balance;
+      document.getElementById('editBalanceModal').style.display = 'flex';
+    }
+
+    function closeEditBalanceModal() {
+      document.getElementById('editBalanceModal').style.display = 'none';
+    }
+
+    function saveUserBalance() {
+      const email = document.getElementById('editBalanceEmail').value;
+      const balanceType = document.getElementById('editBalanceType').value;
+      const amount = parseFloat(document.getElementById('editBalanceAmount').value);
+      
+      if (isNaN(amount)) {
+        alert("Please enter a valid amount");
+        return;
+      }
+      
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const userIndex = users.findIndex(u => u.email === email);
+      
+      if (userIndex === -1) {
+        alert("User not found!");
+        return;
+      }
+      
+      if (balanceType === 'balance') {
+        users[userIndex].balance = amount;
+      } else if (balanceType === 'depositBalance') {
+        users[userIndex].depositBalance = amount;
+      }
+      
+      localStorage.setItem('users', JSON.stringify(users));
+      closeEditBalanceModal();
+      loadAdminData();
+      alert(`User ${balanceType} updated to ₦${amount.toLocaleString()}`);
+    }
+
+    function deleteUser(email) {
+      if (!confirm(`Are you sure you want to delete user ${email}? This cannot be undone.`)) return;
+      
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const updatedUsers = users.filter(u => u.email !== email);
+      
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      loadAdminData();
+      alert(`User ${email} has been deleted.`);
+    }
+
+    // Initialize the app when page loads
+    window.onload = initApp;
+    
+    // Handle Enter key in chat
+    document.getElementById('chatInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>
